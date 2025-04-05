@@ -204,7 +204,7 @@
         }
         .palette {
             display: grid;
-            grid-template-columns: repeat(auto-fit, 120px);
+            grid-template-columns: repeat(5, 120px);
             gap: 15px;
             width: fit-content;
             padding: 20px 0;
@@ -212,24 +212,6 @@
             transition: all 0.5s ease;
             justify-content: center;
         }
-
-        /* Specific adjustments for different numbers of colors */
-        .palette:has(.color-box:nth-child(2):last-child) {
-            grid-template-columns: repeat(2, 120px);
-        }
-
-        .palette:has(.color-box:nth-child(3):last-child) {
-            grid-template-columns: repeat(3, 120px);
-        }
-
-        .palette:has(.color-box:nth-child(4):last-child) {
-            grid-template-columns: repeat(4, 120px);
-        }
-
-        .palette:has(.color-box:nth-child(5):last-child) {
-            grid-template-columns: repeat(5, 120px);
-        }
-
         .color-box {
             border-radius: 8px;
             position: relative;
@@ -243,20 +225,17 @@
         }
 
         /* Desktop hover effect */
-        @media (hover: hover) {
+        @media (hover: hover) and (min-width: 769px) {
             .color-box:hover {
                 transform: scale(1.1);
                 box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
                 transition: transform 0.3s ease, box-shadow 0.3s ease;
+                z-index: 1;
             }
         }
 
         /* Mobile touch effect */
-        @media (hover: none) and (pointer: coarse) {
-            .color-box {
-                transition: transform 0.2s ease;
-            }
-            
+        @media (hover: none) {
             .color-box:active {
                 transform: scale(1.02);
             }
@@ -427,10 +406,6 @@
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
                 width: 100%;
-            }
-
-            .palette:has(.color-box:nth-child(n)) {
-                grid-template-columns: repeat(2, 1fr);
             }
 
             .color-box {
