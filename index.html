@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark-theme">
 
 <head>
     <meta charset="UTF-8">
@@ -8,11 +8,35 @@
     <meta name="keywords" content="utilities, tools, online tools, mini utilities">
     <link rel="icon" href="mu.png" type="image/png">
     <title>Mini Utilities - Home Screen</title>
+    <script>
+        // Immediately set theme before anything loads
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.className = theme + '-theme';
+        })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="language.js" defer></script>
     <style>
         /* General Styles */
+        html.dark-theme {
+            background: #22272e;
+        }
+
+        html.light-theme {
+            background: #ffffff;
+        }
+
+        html {
+            transition: background 0.5s;
+        }
+
+        /* Force dark theme by default */
+        html:not(.light-theme) {
+            background: #22272e;
+        }
+
         body {
             font-family: 'Cinzel Decorative', serif;
             font-weight: 700;
@@ -22,16 +46,21 @@
             min-height: 100vh;
             height: auto;
             margin: 0;
-            background-color: #ffffff;
-            transition: background-color 0.5s, color 0.5s;
+            background: transparent;
+            transition: color 0.5s;
             position: relative;
             overflow-x: hidden;
             padding: 10px;
             box-sizing: border-box;
+            color: #34495e;
+        }
+
+        /* Apply dark theme by default */
+        body:not(.light-theme) {
+            color: #cdd9e5;
         }
 
         .dark-theme {
-            background-color: #22272e;
             color: #cdd9e5;
         }
 
@@ -80,7 +109,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: clamp(4px, 0.8vw, 6px) 0;
+            margin: clamp(2px, 0.4vw, 4px) 0;
             position: relative;
             z-index: 2;
             flex-wrap: wrap;
@@ -106,7 +135,7 @@
         }
 
         .dark-theme h1 {
-            color: #ffffff; /* White heading */
+            color: #ffffff;
         }
 
         /* Search Bar */
@@ -153,7 +182,7 @@
             display: flex !important;
             align-items: center !important;
             gap: clamp(8px, 1.5vw, 10px) !important;
-            text-align: left !important;
+            text-align: center !important;
             justify-content: flex-start !important;
             width: 100% !important;
             margin: 0 !important;
@@ -867,14 +896,21 @@
                 #FFA500 75%, 
                 #FFD700 100%);
             background-size: 200% auto;
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: shine 5s linear infinite;
             font-weight: 700;
             letter-spacing: 0.5px;
+            text-shadow: 0 0 1px rgba(0,0,0,0.1);
+        }
+
+        .dark-theme .shining-gold {
+            text-shadow: 0 0 1px rgba(255,255,255,0.1);
         }
 
         .recent-tools-label {
+            color: #6c5ce7;
             font-weight: 700;
         }
 
@@ -889,13 +925,135 @@
                 #FFA500 75%, 
                 #FFD700 100%) !important;
             background-size: 200% auto !important;
+            background-clip: text !important;
             -webkit-background-clip: text !important;
             -webkit-text-fill-color: transparent !important;
             animation: shine 3s linear infinite !important;
         }
 
         .button-text {
-            margin-left: 8px;
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Three Body Animation */
+        .three-body {
+            --uib-size: 35px;
+            --uib-speed: 0.8s;
+            --uib-color: #6c5ce7;
+            position: relative;
+            display: inline-block;
+            height: var(--uib-size);
+            width: var(--uib-size);
+            animation: spin78236 calc(var(--uib-speed) * 2.5) infinite linear;
+        }
+
+        .dark-theme .three-body {
+            --uib-color: #8b80f9;
+        }
+
+        .three-body__dot {
+            position: absolute;
+            height: 100%;
+            width: 35%;
+        }
+
+        .three-body__dot:after {
+            content: '';
+            position: absolute;
+            height: 0%;
+            width: 100%;
+            padding-bottom: 100%;
+            background-color: var(--uib-color);
+            border-radius: 50%;
+        }
+
+        .three-body__dot:nth-child(1) {
+            bottom: 5%;
+            left: 0;
+            transform: rotate(60deg);
+            transform-origin: 50% 85%;
+        }
+
+        .three-body__dot:nth-child(1)::after {
+            bottom: 0;
+            left: 0;
+            animation: wobble1 var(--uib-speed) infinite ease-in-out;
+            animation-delay: calc(var(--uib-speed) * -0.3);
+        }
+
+        .three-body__dot:nth-child(2) {
+            bottom: 5%;
+            right: 0;
+            transform: rotate(-60deg);
+            transform-origin: 50% 85%;
+        }
+
+        .three-body__dot:nth-child(2)::after {
+            bottom: 0;
+            left: 0;
+            animation: wobble1 var(--uib-speed) infinite calc(var(--uib-speed) * -0.15) ease-in-out;
+        }
+
+        .three-body__dot:nth-child(3) {
+            bottom: -5%;
+            left: 0;
+            transform: translateX(116.666%);
+        }
+
+        .three-body__dot:nth-child(3)::after {
+            top: 0;
+            left: 0;
+            animation: wobble2 var(--uib-speed) infinite ease-in-out;
+        }
+
+        @keyframes spin78236 {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes wobble1 {
+            0%, 100% {
+                transform: translateY(0%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-66%) scale(0.65);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes wobble2 {
+            0%, 100% {
+                transform: translateY(0%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(66%) scale(0.65);
+                opacity: 0.8;
+            }
+        }
+
+        .three-body.paused {
+            animation-play-state: paused;
+        }
+        
+        .three-body.paused .three-body__dot:after {
+            animation-play-state: paused;
+        }
+
+        .action-icon:hover i.fa-lightbulb {
+            color: #FFD700 !important;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .dark-theme .action-icon:hover i.fa-lightbulb {
+            color: #FFD700 !important;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
     </style>
 </head>
@@ -910,7 +1068,11 @@
             <i class="fas fa-language"></i>
         </button>
         <button class="action-icon" onclick="toggleAnimation()" aria-label="Toggle animation">
-            <i class="fas fa-film"></i>
+            <div class="three-body">
+                <div class="three-body__dot"></div>
+                <div class="three-body__dot"></div>
+                <div class="three-body__dot"></div>
+            </div>
         </button>
         <button class="action-icon" onclick="toggleSuggestionPopup(event)" aria-label="Suggest tool">
             <i class="fas fa-lightbulb"></i>
@@ -929,22 +1091,22 @@
 
         <div class="buttons" id="buttonContainer">
             <div class="separator"></div>
-            <div style="grid-column: 1 / -1; text-align: center; margin-top: 0px; font-size: 0.9rem;" class="recent-tools-label">Recently Used Tools</div>
-            <button class="button" onclick="navigateTo('cg.html')" aria-label="Navigate to Colour Palette" data-original-text="Colour Palette"><i class="fas fa-palette"></i> Colour Palette</button>
-            <button class="button" onclick="navigateTo('cpe.html')" aria-label="Navigate to Colour Palette Extractor" data-original-text="Color Picker"><i class="fas fa-eye-dropper"></i> Color Picker</button>
-            <button class="button" onclick="navigateTo('rn.html')" aria-label="Navigate to Random Name" data-original-text="Random Name"><i class="fas fa-random"></i> Random Name</button>
+            <div style="grid-column: 1 / -1; text-align: center; margin-top: 0px; font-size: 0.9rem;" class="recent-tools-label" data-translate="recentlyUsedTools">Recently Used Tools</div>
+            <button class="button" onclick="navigateTo('cg.html')" aria-label="Navigate to Colour Palette" data-original-text="Colour Palette"><i class="fas fa-palette"></i><span class="button-text">Colour Palette</span></button>
+            <button class="button" onclick="navigateTo('cpe.html')" aria-label="Navigate to Colour Palette Extractor" data-original-text="Color Picker"><i class="fas fa-eye-dropper"></i><span class="button-text">Color Picker</span></button>
+            <button class="button" onclick="navigateTo('rn.html')" aria-label="Navigate to Random Name" data-original-text="Random Name"><i class="fas fa-random"></i><span class="button-text">Random Name</span></button>
             <div class="separator"></div>
-            <div style="grid-column: 1 / -1; text-align: center; margin-top: 0px; font-size: 0.9rem;" class="recent-tools-label shining-gold">✨ New Added Tools ✨</div>
-            <button class="button" onclick="navigateTo('b.html')" aria-label="Navigate to Binary Convert" data-original-text="Binary Convert"><i class="fa-solid fa-laptop-code"></i> Binary Convert</button>
-            <button class="button" onclick="navigateTo('m.html')" aria-label="Navigate to Markdown" data-original-text="Markdown"><i class="fa-solid fa-code"></i> Markdown</button>
-            <button class="button" onclick="navigateTo('r.html')" aria-label="Navigate to ReWriter" data-original-text="ReWriter"><i class="fa-solid fa-i-cursor"></i> ReWriter</button>
+            <div style="grid-column: 1 / -1; text-align: center; margin-top: 0px; font-size: 0.9rem;" class="recent-tools-label shining-gold" data-translate="newAddedTools">✨ New Added Tools ✨</div>
+            <button class="button" onclick="navigateTo('b.html')" aria-label="Navigate to Binary Convert" data-original-text="Binary Convert"><i class="fa-solid fa-laptop-code"></i><span class="button-text">Binary Convert</span></button>
+            <button class="button" onclick="navigateTo('m.html')" aria-label="Navigate to Markdown" data-original-text="Markdown"><i class="fa-solid fa-code"></i><span class="button-text">Markdown</span></button>
+            <button class="button" onclick="navigateTo('r.html')" aria-label="Navigate to ReWriter" data-original-text="ReWriter"><i class="fa-solid fa-i-cursor"></i><span class="button-text">ReWriter</span></button>
             <div class="separator"></div>
-            <button class="button" onclick="navigateTo('tz.html')" aria-label="Navigate to Time Zone" data-original-text="Time Zone"><i class="fa-solid fa-user-clock"></i> Time Zone</button>
-            <button class="button" onclick="navigateTo('uc.html')" aria-label="Navigate to Unit Convert" data-original-text="Unit Convert"><i class="fa-solid fa-arrows-rotate"></i> Unit Convert</button>
-            <button class="button" onclick="navigateTo('us.html')" aria-label="Navigate to URL Shortener" data-original-text="URL Shortener"><i class="fa-solid fa-link"></i> URL Shortener</button>
-            <button class="button" onclick="navigateTo('pc.html')" aria-label="Navigate to Password Check" data-original-text="Password Check"><i class="fa-solid fa-lock"></i> Password Check</button>
-            <button class="button" onclick="navigateTo('cc.html')" aria-label="Navigate to Char/Line Count" data-original-text="Char/Line Count"><i class="fa-solid fa-chart-bar"></i> Char/Line Count</button>
-            <button class="button" onclick="navigateTo('tts.html')" aria-label="Navigate to Text to Speech" data-original-text="Text to Speech"><i class="fa-solid fa-headphones"></i> Text to Speech</button>
+            <button class="button" onclick="navigateTo('tz.html')" aria-label="Navigate to Time Zone" data-original-text="Time Zone"><i class="fa-solid fa-user-clock"></i><span class="button-text">Time Zone</span></button>
+            <button class="button" onclick="navigateTo('uc.html')" aria-label="Navigate to Unit Convert" data-original-text="Unit Convert"><i class="fa-solid fa-arrows-rotate"></i><span class="button-text">Unit Convert</span></button>
+            <button class="button" onclick="navigateTo('us.html')" aria-label="Navigate to URL Shortener" data-original-text="URL Shortener"><i class="fa-solid fa-link"></i><span class="button-text">URL Shortener</span></button>
+            <button class="button" onclick="navigateTo('pc.html')" aria-label="Navigate to Password Check" data-original-text="Password Check"><i class="fa-solid fa-lock"></i><span class="button-text">Password Check</span></button>
+            <button class="button" onclick="navigateTo('cc.html')" aria-label="Navigate to Char/Line Count" data-original-text="Char/Line Count"><i class="fa-solid fa-chart-bar"></i><span class="button-text">Char/Line Count</span></button>
+            <button class="button" onclick="navigateTo('tts.html')" aria-label="Navigate to Text to Speech" data-original-text="Text to Speech"><i class="fa-solid fa-headphones"></i><span class="button-text">Text to Speech</span></button>
         </div>
     </div>
 
@@ -1029,29 +1191,41 @@
 
         // Function to toggle theme
         function toggleTheme() {
-            document.body.classList.toggle('dark-theme');
-            const isDarkTheme = document.body.classList.contains('dark-theme');
-            localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
-            document.getElementById('themeSwitch').innerHTML = isDarkTheme ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            const html = document.documentElement;
+            const isDarkTheme = html.classList.contains('dark-theme');
             
+            if (isDarkTheme) {
+                html.classList.remove('dark-theme');
+                html.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.remove('light-theme');
+                html.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            document.getElementById('themeSwitch').innerHTML = isDarkTheme ? 
+                '<i class="fas fa-moon"></i>' : 
+                '<i class="fas fa-sun"></i>';
+                
             // Update active character colors
             const activeChars = document.querySelectorAll('.japanese-char');
             activeChars.forEach(char => {
                 if (char.style.opacity !== '0') {
                     if (char.style.color.includes('108, 92, 231')) {
-                        char.style.color = isDarkTheme ? 
+                        char.style.color = !isDarkTheme ? 
                             'rgba(139, 128, 249, 0.2)' : 
                             'rgba(108, 92, 231, 0.4)';
                     } else if (char.style.color.includes('72, 187, 120')) {
-                        char.style.color = isDarkTheme ? 
+                        char.style.color = !isDarkTheme ? 
                             'rgba(72, 187, 120, 0.2)' : 
                             'rgba(72, 187, 120, 0.4)';
                     } else if (char.style.color.includes('139, 128, 249')) {
-                        char.style.color = isDarkTheme ? 
+                        char.style.color = !isDarkTheme ? 
                             'rgba(108, 92, 231, 0.4)' : 
                             'rgba(139, 128, 249, 0.2)';
                     } else {
-                        char.style.color = isDarkTheme ? 
+                        char.style.color = !isDarkTheme ? 
                             'rgba(72, 187, 120, 0.4)' : 
                             'rgba(72, 187, 120, 0.2)';
                     }
@@ -1059,29 +1233,40 @@
             });
         }
 
-        // Theme check
+        // Theme check on load
         window.onload = function() {
+            const html = document.documentElement;
             const storedTheme = localStorage.getItem('theme');
-            if (storedTheme === 'dark') {
-                document.body.classList.add('dark-theme');
+            
+            // Set dark theme as default
+            if (storedTheme === 'light') {
+                html.classList.remove('dark-theme');
+                html.classList.add('light-theme');
+                document.getElementById('themeSwitch').innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                html.classList.remove('light-theme');
+                html.classList.add('dark-theme');
+                document.getElementById('themeSwitch').innerHTML = '<i class="fas fa-sun"></i>';
             }
             
-            // Initialize background based on animation preference
+            // Initialize background and animation states
             initializeGrid();
             const isAnimated = localStorage.getItem('bgAnimated') !== 'false';
-            const filmIcon = document.querySelector('.action-icon[onclick="toggleAnimation()"] i');
+            const threeBody = document.querySelector('.three-body');
+            
             if (isAnimated) {
                 startAnimation();
-                filmIcon.parentElement.classList.add('animated');
+                threeBody?.classList.remove('paused');
             } else {
                 showAllCharacters();
-                filmIcon.parentElement.classList.remove('animated');
+                threeBody?.classList.add('paused');
             }
 
-            // Add event listener for language switch button
+            // Add language button click handler
             const languageSwitch = document.getElementById('languageSwitch');
             if (languageSwitch) {
-                languageSwitch.addEventListener('click', changeLanguage);
+                languageSwitch.removeEventListener('click', changeLanguage);
+                languageSwitch.addEventListener('click', toggleLanguagePopup);
             }
         };
 
@@ -1089,14 +1274,14 @@
             const isCurrentlyAnimated = localStorage.getItem('bgAnimated') !== 'false';
             localStorage.setItem('bgAnimated', !isCurrentlyAnimated);
             
-            const filmIcon = document.querySelector('.action-icon[onclick="toggleAnimation()"] i');
+            const threeBody = document.querySelector('.three-body');
             if (!isCurrentlyAnimated) {
                 startAnimation();
-                filmIcon.parentElement.classList.add('animated');
+                threeBody.classList.remove('paused');
             } else {
                 stopAnimation();
                 showAllCharacters();
-                filmIcon.parentElement.classList.remove('animated');
+                threeBody.classList.add('paused');
             }
         }
 
@@ -1357,33 +1542,6 @@
                 suggestionPopup.style.display = 'none';
             }
         });
-
-        // Update language button click handler
-        window.onload = function() {
-            const storedTheme = localStorage.getItem('theme');
-            if (storedTheme === 'dark') {
-                document.body.classList.add('dark-theme');
-            }
-            
-            // Initialize background and other existing functionality...
-            initializeGrid();
-            const isAnimated = localStorage.getItem('bgAnimated') !== 'false';
-            const filmIcon = document.querySelector('.action-icon[onclick="toggleAnimation()"] i');
-            if (isAnimated) {
-                startAnimation();
-                filmIcon.parentElement.classList.add('animated');
-            } else {
-                showAllCharacters();
-                filmIcon.parentElement.classList.remove('animated');
-            }
-
-            // Add language button click handler
-            const languageSwitch = document.getElementById('languageSwitch');
-            if (languageSwitch) {
-                languageSwitch.removeEventListener('click', changeLanguage);
-                languageSwitch.addEventListener('click', toggleLanguagePopup);
-            }
-        };
     </script>
 </body>
 
