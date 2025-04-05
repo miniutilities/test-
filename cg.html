@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="mu.png" type="image/png">
+    <title>Mini Utilities - Colour Palette Generator</title>
+    <script>
+        // Immediately set theme before anything loads
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.className = theme + '-theme';
+        })();
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Theme Styles */
+        html.dark-theme {
+            background: #22272e;
+        }
+
+        html.light-theme {
+            background: #ffffff;
+        }
+
+        html {
+            transition: background 0.5s;
+        }
+
+        /* Force dark theme by default */
+        html:not(.light-theme) {
+            background: #22272e;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: transparent;
+            overflow: hidden;
+            color: #333;
+            transition: color 0.5s;
+            position: relative;
+        }
+
+        /* Apply dark theme by default */
+        body:not(.light-theme) {
+            color: #cdd9e5;
+        }
+
+        .dark-theme {
+            color: #cdd9e5;
+        }
+
+        .dark-theme .container {
+            background: rgba(34, 39, 46, 0.9);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .dark-theme h1 {
+            color: #ffffff;
+        }
+
+        .dark-theme .hint {
+            color: #a0a0a0;
+        }
+
+        .dark-theme .controls label {
+            color: #cdd9e5;
+        }
+
+        .dark-theme .controls input[type="number"] {
+            background: #2d333b;
+            border-color: #4b5563;
+            color: #cdd9e5;
+        }
+
+        .dark-theme .controls input[type="number"]:focus {
+            border-color: #8b80f9;
+        }
+
+        .dark-theme .home-button {
+            color: #8b80f9;
+        }
+
+        .dark-theme .home-button:hover {
+            color: #a599ff;
+        }
+
+        /* Background Animation Styles */
+        .japanese-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+        }
+
+        .japanese-char {
+            position: relative;
+            font-size: clamp(3rem, 8vw, 5rem);
+            opacity: 0;
+            font-family: "Noto Sans Arabic", "Noto Sans JP", "Noto Sans SC", "Noto Sans KR", "Noto Sans Thai", "Noto Sans Devanagari", sans-serif;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: none;
+        }
+
+        @keyframes fade {
+            0% { opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            width: 80%;
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+            transition: background 0.5s, box-shadow 0.5s;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeIn 1s forwards ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #34495e;
+            transition: color 0.5s;
+        }
+        .hint {
+            font-size: 16px;
+            color: #777;
+            margin-bottom: 20px;
+            transition: color 0.5s;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .controls label {
+            font-size: 18px;
+            color: #333;
+            margin-right: 10px;
+            transition: color 0.5s;
+        }
+        .controls input[type="number"] {
+            width: 60px;
+            text-align: center;
+            padding: 8px;
+            margin-right: 10px;
+            border: 2px solid #dce4ec;
+            border-radius: 8px;
+            background: #fff;
+            color: #495057;
+            font-size: 16px;
+            transition: border-color 0.5s, background 0.5s, color 0.5s;
+        }
+        .controls input[type="number"]:focus {
+            border-color: #8ab4f8;
+            outline: none;
+        }
+        .controls button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #6c5ce7;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .controls button:hover {
+            background-color: #574ae2;
+            transform: translateY(-2px);
+        }
+        .palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            transition: all 0.5s ease;
+        }
+        .color-box {
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            aspect-ratio: 1 / 1;
+        }
+        .color-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .color-box::after {
+            content: attr(data-hex);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-size: 14px;
+            padding: 5px;
+            box-sizing: border-box;
+            border-radius: 0 0 8px 8px;
+        }
+        .color-box[data-size="large"] {
+            width: calc((100% / 5) - 15px);
+            height: auto;
+        }
+        .color-box[data-size="medium"] {
+            width: calc((100% / 5) - 15px);
+            height: auto;
+        }
+        .color-box[data-size="small"] {
+            width: calc((100% / 5) - 15px);
+            height: auto;
+        }
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1000;
+        }
+        .notification.show {
+            opacity: 1;
+        }
+        .error {
+            color: #ff4757;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        /* Home Button */
+        .home-button {
+            display: none;
+        }
+
+        /* Back Arrow */
+        .back-button {
+            display: none;
+        }
+
+        /* Logo Button */
+        .logo-button {
+            display: none;
+        }
+
+        /* Top Actions Container */
+        .top-actions {
+            position: fixed;
+            top: clamp(10px, 2vw, 20px);
+            left: clamp(10px, 2vw, 20px);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(6px, 1vw, 8px);
+            background: rgba(255, 255, 255, 0.2);
+            padding: clamp(8px, 1.5vw, 10px) clamp(4px, 1vw, 6px);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 2px solid rgba(108, 92, 231, 0.2);
+            align-items: center;
+            width: 40px;
+        }
+
+        .dark-theme .top-actions {
+            background: rgba(34, 39, 46, 0.2);
+            border: 2px solid rgba(139, 128, 249, 0.2);
+        }
+
+        .action-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            color: #6c5ce7;
+            transition: color 0.3s ease;
+            padding: clamp(6px, 1.5vw, 8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .dark-theme .action-icon {
+            color: #8b80f9;
+        }
+
+        .action-icon:hover {
+            color: #8b80f9;
+        }
+
+        .dark-theme .action-icon:hover {
+            color: #a599ff;
+        }
+
+        .action-icon img {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="japanese-bg" id="japaneseBg"></div>
+    <div class="top-actions">
+        <button class="action-icon" onclick="history.back()" aria-label="Go back">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <button class="action-icon" onclick="location.href='index.html'" aria-label="Home">
+            <img src="mu.png" alt="Mini Utilities">
+        </button>
+    </div>
+    <div class="container">
+        <h1>Color Palette Generator</h1>
+        <div class="hint">Press the Space key to generate a new color palette!</div>
+        <div class="controls">
+            <label for="numColors">Number of colors:</label>
+            <input type="number" id="numColors" min="1" max="10" value="5">
+            <button id="generateBtn">Generate</button>
+        </div>
+        <div id="palette" class="palette"></div>
+        <div id="error" class="error"></div>
+    </div>
+
+    <div id="notification" class="notification">Color copied to clipboard!</div>
+
+    <script src="background.js"></script>
+    <script>
+        const paletteContainer = document.getElementById('palette');
+        const error = document.getElementById('error');
+        const notification = document.getElementById('notification');
+
+        // Function to convert RGB to HSL
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return [h * 360, s * 100, l * 100];
+        }
+
+        // Function to convert HSL to RGB
+        function hslToRgb(h, s, l) {
+            h /= 360;
+            s /= 100;
+            l /= 100;
+            let r, g, b;
+
+            if (s === 0) {
+                r = g = b = l;
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1/6) return p + (q - p) * 6 * t;
+                    if (t < 1/2) return q;
+                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                };
+
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+
+            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+        }
+
+        // Function to generate a harmonious color palette
+        function generateHarmoniousPalette(numColors) {
+            // Generate a random base hue (0-360)
+            const baseHue = Math.random() * 360;
+            const palettes = [];
+            
+            // Generate different color schemes
+            for (let i = 0; i < numColors; i++) {
+                let hue;
+                switch (i) {
+                    case 0: // Base color
+                        hue = baseHue;
+                        break;
+                    case 1: // Complementary
+                        hue = (baseHue + 180) % 360;
+                        break;
+                    case 2: // Analogous 1
+                        hue = (baseHue + 30) % 360;
+                        break;
+                    case 3: // Analogous 2
+                        hue = (baseHue - 30 + 360) % 360;
+                        break;
+                    case 4: // Triadic 1
+                        hue = (baseHue + 120) % 360;
+                        break;
+                    case 5: // Triadic 2
+                        hue = (baseHue + 240) % 360;
+                        break;
+                    case 6: // Split Complementary 1
+                        hue = (baseHue + 150) % 360;
+                        break;
+                    case 7: // Split Complementary 2
+                        hue = (baseHue + 210) % 360;
+                        break;
+                    case 8: // Square 1
+                        hue = (baseHue + 90) % 360;
+                        break;
+                    case 9: // Square 2
+                        hue = (baseHue + 270) % 360;
+                        break;
+                    default:
+                        hue = baseHue;
+                }
+
+                // Generate a color with varying saturation and lightness
+                const saturation = 60 + Math.random() * 20; // 60-80%
+                const lightness = 40 + Math.random() * 20; // 40-60%
+                
+                const [r, g, b] = hslToRgb(hue, saturation, lightness);
+                palettes.push(`#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`);
+            }
+            
+            return palettes;
+        }
+
+        // Function to generate color palette
+        function generatePalette() {
+            const numColors = document.getElementById('numColors').value;
+            if (numColors < 1 || numColors > 10) {
+                error.textContent = 'Please enter a number between 1 and 10.';
+                return;
+            }
+            error.textContent = '';
+            paletteContainer.innerHTML = '';
+
+            const colors = generateHarmoniousPalette(numColors);
+            
+            colors.forEach(color => {
+                const colorBox = document.createElement('div');
+                colorBox.classList.add('color-box');
+                colorBox.dataset.hex = color;
+                colorBox.style.backgroundColor = color;
+                colorBox.dataset.size = (numColors <= 5) ? 'large' : (numColors > 5 && numColors <= 8) ? 'medium' : 'small';
+
+                colorBox.addEventListener('click', () => copyToClipboard(color));
+                paletteContainer.appendChild(colorBox);
+            });
+        }
+
+        // Function to copy color to clipboard and show notification
+        function copyToClipboard(hexCode) {
+            navigator.clipboard.writeText(hexCode).then(() => {
+                notification.textContent = `${hexCode} copied to clipboard!`;
+                showNotification();
+            }).catch(() => {
+                notification.textContent = 'Failed to copy color.';
+                showNotification();
+            });
+        }
+
+        // Function to show notification
+        function showNotification() {
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Generate palette on button click
+        document.getElementById('generateBtn').addEventListener('click', generatePalette);
+
+        // Generate palette on spacebar press
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                generatePalette();
+            }
+        });
+
+        // Initialize background and generate initial palette on page load
+        window.onload = function() {
+            // Check and apply theme from localStorage
+            const html = document.documentElement;
+            const storedTheme = localStorage.getItem('theme');
+            
+            // Set dark theme as default
+            if (storedTheme === 'light') {
+                html.classList.remove('dark-theme');
+                html.classList.add('light-theme');
+            } else {
+                html.classList.remove('light-theme');
+                html.classList.add('dark-theme');
+            }
+            
+            initBackground();
+            generatePalette();
+        };
+
+        // Theme toggle function
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDarkTheme = html.classList.contains('dark-theme');
+            
+            if (isDarkTheme) {
+                html.classList.remove('dark-theme');
+                html.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.remove('light-theme');
+                html.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function initializeGrid() {
+            const bg = document.getElementById('japaneseBg');
+            bg.innerHTML = '';
+            
+            // Create a copy of mixedChars and shuffle it
+            const shuffledChars = shuffleArray([...mixedChars]);
+            
+            // Reduce grid to 8x6 (48 characters) instead of 12x8 (96 characters)
+            for (let i = 0; i < 48; i++) {
+                const char = document.createElement('div');
+                char.className = 'japanese-char';
+                char.textContent = shuffledChars[i % shuffledChars.length];
+                char.style.opacity = '0';
+                bg.appendChild(char);
+            }
+        }
+
+        // Track active characters and their colors
+        const activeCharacters = new Set();
+        let purpleCount = 0;
+        let greenCount = 0;
+
+        function animateRandomChar() {
+            const chars = document.querySelectorAll('.japanese-char');
+            
+            // Reduce maximum active characters from 15 to 8
+            if (activeCharacters.size > 8) {
+                const activeArray = Array.from(activeCharacters);
+                const charToRemove = activeArray[Math.floor(Math.random() * activeArray.length)];
+                if (charToRemove.style.color.includes('108, 92, 231') || charToRemove.style.color.includes('139, 128, 249')) {
+                    purpleCount = Math.max(0, purpleCount - 1);
+                } else {
+                    greenCount = Math.max(0, greenCount - 1);
+                }
+                charToRemove.style.animation = 'fade 8s ease-in-out reverse';
+                setTimeout(() => {
+                    charToRemove.style.animation = '';
+                    charToRemove.style.opacity = '0';
+                    activeCharacters.delete(charToRemove);
+                }, 8000);
+            }
+        }
+    </script>
+</body>
+</html>
