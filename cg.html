@@ -336,6 +336,87 @@
             object-fit: contain;
             opacity: 0.9;
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .hint {
+                font-size: 14px;
+            }
+
+            .controls {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .controls label {
+                margin-right: 0;
+            }
+
+            .color-box[data-size="large"],
+            .color-box[data-size="medium"],
+            .color-box[data-size="small"] {
+                width: calc((100% / 2) - 10px);
+            }
+
+            .palette {
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .controls input[type="number"] {
+                width: 80px;
+            }
+
+            .color-box[data-size="large"],
+            .color-box[data-size="medium"],
+            .color-box[data-size="small"] {
+                width: calc(100% - 10px);
+            }
+
+            .color-box::after {
+                font-size: 12px;
+                padding: 4px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .container {
+                margin: 60px auto;
+            }
+
+            h1 {
+                margin-bottom: 5px;
+            }
+
+            .hint {
+                margin-bottom: 10px;
+            }
+
+            .controls {
+                margin-bottom: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -480,6 +561,7 @@
         // Function to generate color palette
         function generatePalette() {
             const numColors = document.getElementById('numColors').value;
+            console.log('Generating palette with', numColors, 'colors');
             if (numColors < 1 || numColors > 10) {
                 error.textContent = 'Please enter a number between 1 and 10.';
                 return;
@@ -488,6 +570,7 @@
             paletteContainer.innerHTML = '';
 
             const colors = generateHarmoniousPalette(numColors);
+            console.log('Generated colors:', colors);
             
             colors.forEach(color => {
                 const colorBox = document.createElement('div');
@@ -495,7 +578,7 @@
                 colorBox.dataset.hex = color;
                 colorBox.style.backgroundColor = color;
                 colorBox.dataset.size = (numColors <= 5) ? 'large' : (numColors > 5 && numColors <= 8) ? 'medium' : 'small';
-
+                console.log('Creating color box:', color);
                 colorBox.addEventListener('click', () => copyToClipboard(color));
                 paletteContainer.appendChild(colorBox);
             });
@@ -545,7 +628,6 @@
                 html.classList.add('dark-theme');
             }
             
-            initBackground();
             generatePalette();
         };
 
@@ -562,49 +644,6 @@
                 html.classList.remove('light-theme');
                 html.classList.add('dark-theme');
                 localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        function initializeGrid() {
-            const bg = document.getElementById('japaneseBg');
-            bg.innerHTML = '';
-            
-            // Create a copy of mixedChars and shuffle it
-            const shuffledChars = shuffleArray([...mixedChars]);
-            
-            // Reduce grid to 8x6 (48 characters) instead of 12x8 (96 characters)
-            for (let i = 0; i < 48; i++) {
-                const char = document.createElement('div');
-                char.className = 'japanese-char';
-                char.textContent = shuffledChars[i % shuffledChars.length];
-                char.style.opacity = '0';
-                bg.appendChild(char);
-            }
-        }
-
-        // Track active characters and their colors
-        const activeCharacters = new Set();
-        let purpleCount = 0;
-        let greenCount = 0;
-
-        function animateRandomChar() {
-            const chars = document.querySelectorAll('.japanese-char');
-            
-            // Reduce maximum active characters from 15 to 8
-            if (activeCharacters.size > 8) {
-                const activeArray = Array.from(activeCharacters);
-                const charToRemove = activeArray[Math.floor(Math.random() * activeArray.length)];
-                if (charToRemove.style.color.includes('108, 92, 231') || charToRemove.style.color.includes('139, 128, 249')) {
-                    purpleCount = Math.max(0, purpleCount - 1);
-                } else {
-                    greenCount = Math.max(0, greenCount - 1);
-                }
-                charToRemove.style.animation = 'fade 8s ease-in-out reverse';
-                setTimeout(() => {
-                    charToRemove.style.animation = '';
-                    charToRemove.style.opacity = '0';
-                    activeCharacters.delete(charToRemove);
-                }, 8000);
             }
         }
     </script>
