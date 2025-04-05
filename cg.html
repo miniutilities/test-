@@ -40,10 +40,13 @@
             min-height: 100vh;
             margin: 0;
             background: transparent;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             color: #333;
             transition: color 0.5s;
             position: relative;
+            padding: 20px 0;
+            box-sizing: border-box;
         }
 
         /* Apply dark theme by default */
@@ -232,14 +235,20 @@
         .color-box[data-size="large"] {
             width: calc((100% / 5) - 15px);
             height: auto;
+            min-height: 100px;
+            max-height: 150px;
         }
         .color-box[data-size="medium"] {
             width: calc((100% / 5) - 15px);
             height: auto;
+            min-height: 90px;
+            max-height: 130px;
         }
         .color-box[data-size="small"] {
             width: calc((100% / 5) - 15px);
             height: auto;
+            min-height: 80px;
+            max-height: 120px;
         }
         .notification {
             position: fixed;
@@ -339,10 +348,15 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            body {
+                padding: 10px 0;
+            }
+
             .container {
                 width: 95%;
                 padding: 20px;
                 margin: 10px;
+                max-height: none;
             }
 
             h1 {
@@ -368,6 +382,8 @@
             .color-box[data-size="medium"],
             .color-box[data-size="small"] {
                 width: calc((100% / 2) - 10px);
+                min-height: 80px;
+                max-height: 100px;
             }
 
             .palette {
@@ -391,7 +407,9 @@
             .color-box[data-size="large"],
             .color-box[data-size="medium"],
             .color-box[data-size="small"] {
-                width: calc(100% - 10px);
+                width: calc((100% / 2) - 8px);
+                min-height: 60px;
+                max-height: 80px;
             }
 
             .color-box::after {
